@@ -31,7 +31,7 @@ const COVERED_SCENARIOS: Record<CoverageType, readonly ScenarioType[]> = {
   ],
 };
 
-function isScenarioCovered(
+export function isScenarioCovered(
   coverage: CoverageType,
   scenario: ScenarioType,
 ): boolean {
@@ -149,4 +149,23 @@ export function calculateBreakEven(
   }
 
   return Math.ceil(extraOutOfPocket / annualSaving);
+}
+
+/**
+ * What the insurer pays out for a given scenario.
+ *
+ * Modelled as the vehicle value minus the deductible, floored at 0 (the insurer
+ * never pays more than the car is worth, and never less than nothing). This is
+ * consistent with the out-of-pocket model, so for any COVERED scenario:
+ *   calculateOutOfPocket(...) + calculateCoveragePayout(...) === vehicleValue
+ * An uncovered scenario pays nothing.
+ */
+export function calculateCoveragePayout(
+  config: PolicyConfig,
+  scenario: ScenarioType,
+): number {
+  if (!isScenarioCovered(config.coverageType, scenario)) {
+    return 0;
+  }
+  return Math.max(0, config.vehicleValue - config.deductible);
 }
