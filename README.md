@@ -1,4 +1,5 @@
-[![CI](https://github.com/<OWNER>/coverage-modeller/actions/workflows/test.yml/badge.svg)](https://github.com/markwaldron7string/coverage-modeller/actions/workflows/test.yml)
+[![CI](https://github.com/markwaldron7string/coverage-modeller/actions/workflows/test.yml/badge.svg)](https://github.com/markwaldron7string/coverage-modeller/actions/workflows/test.yml)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-coverage--modeller.vercel.app-000?logo=vercel)](https://coverage-modeller.vercel.app/)
 
 # Coverage Modeller
 
@@ -11,6 +12,8 @@ An interactive tool for modelling auto insurance coverage scenarios and
 comparing out-of-pocket costs across different deductible and coverage
 combinations.
 
+**Live demo:** https://coverage-modeller.vercel.app/
+
 > 🚧 Work in progress - built as a portfolio project.
 
 ## Tech stack
@@ -20,16 +23,17 @@ Jest + React Testing Library · GitHub Actions CI
 
 ## Getting started
 
-\`\`\`bash
+```bash
 npm install
 npm run dev
-\`\`\`
+```
 
 Open http://localhost:3000.
 
 ## Scripts
 
-- \`npm run dev\` – start the dev server
-- \`npm test\` – run the test suite
-- \`npm run lint\` – lint
-- \`npm run format\` – format with Prettier
+- `npm run dev` – start the dev server
+- `npm run build` – production build
+- `npm test` – run the test suite
+- `npm run lint` – lint
+- `npm run format` – format with Prettier
