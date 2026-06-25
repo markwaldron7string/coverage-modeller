@@ -19,7 +19,7 @@ interface CostCell {
 function cellClasses(cell: CostCell, other: CostCell): string {
   if (cell.value === null || other.value === null) return "text-slate-800";
   if (cell.value > other.value) return "text-amber-700"; // higher cost
-  if (cell.value < other.value) return "text-green-700"; // lower cost
+  if (cell.value < other.value) return "text-green-800"; // lower cost
   return "text-slate-800"; // tie
 }
 

@@ -19,6 +19,9 @@ import { formatCurrency } from "@/lib/format";
 const POLICY_A_COLOR = "#0d9488"; // teal-600
 const POLICY_B_COLOR = "#475569"; // slate-600
 
+const CHART_HEIGHT = 320; // matches the h-80 wrapper; a fixed numeric height keeps
+// ResponsiveContainer from warning when it measures a 0-height box on first mount.
+
 export interface ChartRow {
   scenario: string;
   "Policy A": number;
@@ -61,7 +64,7 @@ export function ComparisonChart() {
       </figcaption>
 
       <div className="h-80 w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
           <BarChart
             data={data}
             margin={{ top: 8, right: 8, bottom: 56, left: 8 }}
