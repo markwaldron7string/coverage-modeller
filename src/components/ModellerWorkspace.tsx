@@ -6,6 +6,7 @@ import { ResultsPanel } from "./ResultsPanel";
 import { ComparisonResults } from "./ComparisonResults";
 import { ComparisonChart } from "./ComparisonChart";
 import { CopyLinkButton } from "./CopyLinkButton";
+import { ExplanationPanel } from "./ExplanationPanel";
 
 type View = "single" | "compare";
 
@@ -37,9 +38,12 @@ export function ModellerWorkspace() {
       </div>
 
       {view === "single" ? (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
-          <ControlsPanel policy="policyA" />
-          <ResultsPanel policy="policyA" />
+        <div className="flex flex-col gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
+            <ControlsPanel policy="policyA" />
+            <ResultsPanel policy="policyA" />
+          </div>
+          <ExplanationPanel policy="policyA" />
         </div>
       ) : (
         <div className="flex flex-col gap-6">

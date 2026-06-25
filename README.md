@@ -1,3 +1,5 @@
+[![CI](https://github.com/<OWNER>/coverage-modeller/actions/workflows/test.yml/badge.svg)](https://github.com/markwaldron7string/coverage-modeller/actions/workflows/test.yml)
+
 # Coverage Modeller
 
 After seven years in insurance underwriting, the hardest conversation to have
