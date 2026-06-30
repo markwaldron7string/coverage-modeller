@@ -29,9 +29,15 @@ describe("ControlsPanel", () => {
   });
 
   it("renders a radio for each coverage type with plain-language labels", () => {
-    expect(screen.getByRole("radio", { name: /liability only/i })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: /comprehensive/i })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: /full coverage/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: /liability only/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: /comprehensive/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: /full coverage/i }),
+    ).toBeInTheDocument();
   });
 
   it("updates the store when a coverage type is selected", () => {

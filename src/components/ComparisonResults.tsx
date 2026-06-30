@@ -48,7 +48,11 @@ function CostText({ cell, other }: { cell: CostCell; other: CostCell }) {
   );
 }
 
-function costCell(config: PolicyConfig, value: number, covered: boolean): CostCell {
+function costCell(
+  config: PolicyConfig,
+  value: number,
+  covered: boolean,
+): CostCell {
   return { value: covered ? value : null };
 }
 
@@ -56,11 +60,25 @@ export function ComparisonResults() {
   const policyA = useScenarioStore((s) => s.policyA);
   const policyB = useScenarioStore((s) => s.policyB);
 
-  const coveredA = isScenarioCovered(policyA.coverageType, policyA.selectedScenario);
-  const coveredB = isScenarioCovered(policyB.coverageType, policyB.selectedScenario);
+  const coveredA = isScenarioCovered(
+    policyA.coverageType,
+    policyA.selectedScenario,
+  );
+  const coveredB = isScenarioCovered(
+    policyB.coverageType,
+    policyB.selectedScenario,
+  );
 
-  const oopA = costCell(policyA, calculateOutOfPocket(policyA, policyA.selectedScenario), coveredA);
-  const oopB = costCell(policyB, calculateOutOfPocket(policyB, policyB.selectedScenario), coveredB);
+  const oopA = costCell(
+    policyA,
+    calculateOutOfPocket(policyA, policyA.selectedScenario),
+    coveredA,
+  );
+  const oopB = costCell(
+    policyB,
+    calculateOutOfPocket(policyB, policyB.selectedScenario),
+    coveredB,
+  );
 
   // Premium applies regardless of scenario coverage.
   const premiumA: CostCell = { value: estimatePremium(policyA) };
@@ -73,7 +91,10 @@ export function ComparisonResults() {
       aria-labelledby="comparison-heading"
       className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
     >
-      <h2 id="comparison-heading" className="text-lg font-semibold text-slate-900">
+      <h2
+        id="comparison-heading"
+        className="text-lg font-semibold text-slate-900"
+      >
         Side-by-side comparison
       </h2>
 
@@ -83,13 +104,19 @@ export function ComparisonResults() {
         </caption>
         <thead>
           <tr className="border-b border-slate-200">
-            <th scope="col" className="py-2 text-sm font-medium text-slate-500">
+            <th scope="col" className="py-2 text-sm font-medium text-slate-600">
               Metric
             </th>
-            <th scope="col" className="py-2 text-right text-sm font-medium text-slate-700">
+            <th
+              scope="col"
+              className="py-2 text-right text-sm font-medium text-slate-700"
+            >
               Policy A
             </th>
-            <th scope="col" className="py-2 text-right text-sm font-medium text-slate-700">
+            <th
+              scope="col"
+              className="py-2 text-right text-sm font-medium text-slate-700"
+            >
               Policy B
             </th>
           </tr>

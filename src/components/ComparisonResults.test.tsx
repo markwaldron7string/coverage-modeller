@@ -38,14 +38,22 @@ describe("ComparisonResults", () => {
 
   it("uses a real table with column headers for the two policies", () => {
     render(<ComparisonResults />);
-    expect(screen.getByRole("columnheader", { name: /policy a/i })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: /policy b/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /policy a/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /policy b/i }),
+    ).toBeInTheDocument();
   });
 
   it("shows 'Not covered' for a policy whose scenario is uncovered", () => {
     act(() => {
-      useScenarioStore.getState().setCoverageType("policyB", CoverageType.LIABILITY_ONLY);
-      useScenarioStore.getState().setScenario("policyB", ScenarioType.MINOR_ACCIDENT);
+      useScenarioStore
+        .getState()
+        .setCoverageType("policyB", CoverageType.LIABILITY_ONLY);
+      useScenarioStore
+        .getState()
+        .setScenario("policyB", ScenarioType.MINOR_ACCIDENT);
     });
     render(<ComparisonResults />);
     expect(screen.getByText(/not covered/i)).toBeInTheDocument();

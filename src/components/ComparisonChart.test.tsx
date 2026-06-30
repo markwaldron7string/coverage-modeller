@@ -2,10 +2,7 @@
 import React from "react";
 import { render, screen, act, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import {
-  ComparisonChart,
-  buildComparisonChartData,
-} from "./ComparisonChart";
+import { ComparisonChart, buildComparisonChartData } from "./ComparisonChart";
 import { useScenarioStore } from "@/store/scenarioStore";
 import { CoverageType, ScenarioType, PolicyConfig } from "@/types";
 
@@ -79,14 +76,18 @@ describe("ComparisonChart", () => {
 
   it("provides an accessible data table covering all five scenarios", () => {
     render(<ComparisonChart />);
-    const table = screen.getByRole("table", { name: /out-of-pocket cost by scenario/i });
+    const table = screen.getByRole("table", {
+      name: /out-of-pocket cost by scenario/i,
+    });
     // 5 scenario rows + 1 header row
     expect(within(table).getAllByRole("row")).toHaveLength(6);
   });
 
   it("updates when a policy slice changes", () => {
     render(<ComparisonChart />);
-    const table = screen.getByRole("table", { name: /out-of-pocket cost by scenario/i });
+    const table = screen.getByRole("table", {
+      name: /out-of-pocket cost by scenario/i,
+    });
     // Policy A default deductible is $1,000; full coverage covers all 5 scenarios.
     expect(within(table).getAllByText("$1,000")).toHaveLength(5);
     act(() => {

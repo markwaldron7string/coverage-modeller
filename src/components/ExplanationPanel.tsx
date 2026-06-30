@@ -19,7 +19,7 @@ export function ExplanationPanel({ policy }: ExplanationPanelProps) {
     >
       <h2
         id={headingId}
-        className="text-xs font-semibold uppercase tracking-wide text-teal-800"
+        className="text-xs font-semibold tracking-wide text-teal-800 uppercase"
       >
         In plain English
       </h2>

@@ -106,8 +106,8 @@ function Metric({
       <dd
         className={
           emphasis
-            ? "text-2xl font-bold tabular-nums text-slate-900"
-            : "text-lg font-semibold tabular-nums text-slate-800"
+            ? "text-2xl font-bold text-slate-900 tabular-nums"
+            : "text-lg font-semibold text-slate-800 tabular-nums"
         }
       >
         {value}

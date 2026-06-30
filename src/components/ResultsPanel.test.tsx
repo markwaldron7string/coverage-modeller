@@ -39,8 +39,12 @@ describe("ResultsPanel (single-panel mode)", () => {
 
   it("shows a descriptive message for an uncovered scenario instead of zeros", () => {
     act(() => {
-      useScenarioStore.getState().setCoverageType("policyA", CoverageType.LIABILITY_ONLY);
-      useScenarioStore.getState().setScenario("policyA", ScenarioType.MINOR_ACCIDENT);
+      useScenarioStore
+        .getState()
+        .setCoverageType("policyA", CoverageType.LIABILITY_ONLY);
+      useScenarioStore
+        .getState()
+        .setScenario("policyA", ScenarioType.MINOR_ACCIDENT);
     });
     render(<ResultsPanel policy="policyA" />);
     expect(screen.getByText(/not covered/i)).toBeInTheDocument();
@@ -67,7 +71,9 @@ describe("ResultsPanel (comparison mode)", () => {
       deductible: 250,
       selectedScenario: ScenarioType.MINOR_ACCIDENT,
     };
-    render(<ResultsPanel policy="policyA" comparisonConfig={comparisonConfig} />);
+    render(
+      <ResultsPanel policy="policyA" comparisonConfig={comparisonConfig} />,
+    );
     expect(screen.getByText(/break-even/i)).toBeInTheDocument();
     expect(screen.getByText("13 years")).toBeInTheDocument();
   });

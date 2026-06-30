@@ -13,7 +13,9 @@ describe("CopyLinkButton", () => {
 
   it("is visible with a copy label", () => {
     render(<CopyLinkButton />);
-    expect(screen.getByRole("button", { name: /copy link/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /copy link/i }),
+    ).toBeInTheDocument();
   });
 
   it("copies the current URL to the clipboard and confirms", async () => {

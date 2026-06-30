@@ -68,7 +68,7 @@ export function ControlsPanel({
             const next = e.target.valueAsNumber;
             if (!Number.isNaN(next)) setVehicleValue(policy, next);
           }}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 tabular-nums focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 tabular-nums focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 focus:outline-none"
         />
       </div>
 
@@ -108,7 +108,7 @@ export function ControlsPanel({
                   </label>
                   <span
                     id={`coverage-desc-${policy}-${type}`}
-                    className="text-sm text-slate-500"
+                    className="text-sm text-slate-600"
                   >
                     {COVERAGE_DESCRIPTIONS[type]}
                   </span>
@@ -131,7 +131,7 @@ export function ControlsPanel({
           <output
             htmlFor={`deductible-${policy}`}
             aria-live="polite"
-            className="text-sm font-semibold tabular-nums text-teal-700"
+            className="text-sm font-semibold text-teal-700 tabular-nums"
           >
             {formatCurrency(deductible)}
           </output>
@@ -147,7 +147,7 @@ export function ControlsPanel({
           aria-valuetext={formatCurrency(deductible)}
           className="w-full accent-teal-600"
         />
-        <div className="flex justify-between text-xs text-slate-400 tabular-nums">
+        <div className="flex justify-between text-xs text-slate-600 tabular-nums">
           <span>{formatCurrency(DEDUCTIBLE_MIN)}</span>
           <span>{formatCurrency(DEDUCTIBLE_MAX)}</span>
         </div>
@@ -165,7 +165,7 @@ export function ControlsPanel({
           id={`scenario-${policy}`}
           value={selectedScenario}
           onChange={(e) => setScenario(policy, e.target.value as ScenarioType)}
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 focus:outline-none"
         >
           {Object.values(ScenarioType).map((scenario) => (
             <option key={scenario} value={scenario}>

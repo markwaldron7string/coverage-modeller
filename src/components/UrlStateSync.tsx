@@ -25,7 +25,11 @@ export function UrlStateSync() {
       const { policyA, policyB } = useScenarioStore.getState();
       const query = encodeState(policyA, policyB);
       // replaceState (not pushState) so dragging a slider doesn't flood history.
-      window.history.replaceState(null, "", `${window.location.pathname}?${query}`);
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}?${query}`,
+      );
     };
     writeUrl(); // reflect current state immediately (also self-heals invalid params)
 

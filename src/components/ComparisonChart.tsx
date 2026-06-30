@@ -100,15 +100,25 @@ export function ComparisonChart() {
               cursor={{ fill: "#f1f5f9" }}
             />
             <Legend />
-            <Bar dataKey="Policy A" fill={POLICY_A_COLOR} radius={[4, 4, 0, 0]} />
-            <Bar dataKey="Policy B" fill={POLICY_B_COLOR} radius={[4, 4, 0, 0]} />
+            <Bar
+              dataKey="Policy A"
+              fill={POLICY_A_COLOR}
+              radius={[4, 4, 0, 0]}
+            />
+            <Bar
+              dataKey="Policy B"
+              fill={POLICY_B_COLOR}
+              radius={[4, 4, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       {/* Accessible text equivalent of the chart for screen readers. */}
       <table className="sr-only">
-        <caption>Out-of-pocket cost by scenario for Policy A and Policy B</caption>
+        <caption>
+          Out-of-pocket cost by scenario for Policy A and Policy B
+        </caption>
         <thead>
           <tr>
             <th scope="col">Scenario</th>

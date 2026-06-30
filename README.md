@@ -21,6 +21,25 @@ combinations.
 Next.js (App Router) · React · TypeScript (strict) · TailwindCSS · Zustand ·
 Jest + React Testing Library · GitHub Actions CI
 
+## Performance & accessibility
+
+Lighthouse audit — incognito Chrome on the deployed production build:
+
+| Category       | Score |
+| -------------- | ----- |
+| Performance    | 100   |
+| Accessibility  | 96    |
+| Best Practices | 96    |
+| SEO            | 100   |
+
+![Lighthouse report](docs/lighthouse.png)
+
+Accessibility was built to WCAG 2.1 AA from the start — native semantic form
+controls, ARIA live regions for derived results, full keyboard operability, and
+information never conveyed by colour alone. Full audit notes, including the axe
+DevTools results and the manual keyboard pass, are in
+[docs/accessibility.md](docs/accessibility.md).
+
 ## Getting started
 
 ```bash

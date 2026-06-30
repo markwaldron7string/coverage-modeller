@@ -30,15 +30,18 @@ describe("ModellerWorkspace", () => {
 
   it("switches to comparison mode showing two policy panels and the comparison table", () => {
     fireEvent.click(screen.getByRole("button", { name: /compare two/i }));
-    expect(screen.getByRole("heading", { name: /policy a/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /policy b/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /policy a/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /policy b/i }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: /side-by-side comparison/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /compare two/i })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    expect(
+      screen.getByRole("button", { name: /compare two/i }),
+    ).toHaveAttribute("aria-pressed", "true");
   });
 
   it("switches back to single mode", () => {

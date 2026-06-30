@@ -75,7 +75,7 @@ function ToggleButton({
       aria-pressed={active}
       className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 ${
         active
-          ? "bg-teal-600 text-white"
+          ? "bg-teal-700 text-white"
           : "text-slate-600 hover:text-slate-900"
       }`}
     >
