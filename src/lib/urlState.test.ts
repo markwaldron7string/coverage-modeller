@@ -10,6 +10,29 @@ const policy = (overrides: Partial<PolicyConfig> = {}): PolicyConfig => ({
   ...overrides,
 });
 
+describe("AC2 — null scenario survives a URL round-trip", () => {
+  const cfg = (o: Partial<PolicyConfig> = {}): PolicyConfig => ({
+    vehicleValue: 20000,
+    coverageType: CoverageType.FULL_COVERAGE,
+    deductible: 1000,
+    selectedScenario: ScenarioType.MINOR_ACCIDENT,
+    ...o,
+  });
+
+  it("round-trips a null scenario as null", () => {
+    const a = cfg({ selectedScenario: null });
+    const b = cfg({ selectedScenario: ScenarioType.THEFT });
+    const decoded = decodeState(new URLSearchParams(encodeState(a, b)));
+    expect(decoded.policyA.selectedScenario).toBeNull();
+    expect(decoded.policyB.selectedScenario).toBe(ScenarioType.THEFT);
+  });
+
+  it("falls back to the default scenario when the param is absent", () => {
+    const decoded = decodeState(new URLSearchParams("av=20000"));
+    expect(decoded.policyA.selectedScenario).toBe(DEFAULT_POLICY_A.selectedScenario);
+  });
+});
+
 describe("encodeState / decodeState", () => {
   it("round-trips both policies losslessly", () => {
     const a = policy({

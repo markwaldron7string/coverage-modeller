@@ -40,6 +40,16 @@ export function ControlsPanel({
   // Namespace every id by policy so two panels can coexist without colliding.
   const headingId = `controls-heading-${policy}`;
 
+  // Native min/max don't stop a user typing an out-of-range value, so derive a
+  // validation message from the current value and wire it to the input.
+  const vehicleErrorId = `vehicle-value-error-${policy}`;
+  const vehicleError =
+    vehicleValue < VEHICLE_MIN
+      ? `Enter a vehicle value of at least ${formatCurrency(VEHICLE_MIN)}.`
+      : vehicleValue > VEHICLE_MAX
+        ? `Enter a vehicle value of at most ${formatCurrency(VEHICLE_MAX)}.`
+        : null;
+
   return (
     <section
       aria-labelledby={headingId}
@@ -68,8 +78,15 @@ export function ControlsPanel({
             const next = e.target.valueAsNumber;
             if (!Number.isNaN(next)) setVehicleValue(policy, next);
           }}
+          aria-invalid={vehicleError ? "true" : undefined}
+          aria-describedby={vehicleError ? vehicleErrorId : undefined}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 tabular-nums focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 focus:outline-none"
         />
+        {vehicleError && (
+          <p id={vehicleErrorId} className="text-sm text-red-700">
+            {vehicleError}
+          </p>
+        )}
       </div>
 
       {/* Coverage type */}
@@ -163,10 +180,14 @@ export function ControlsPanel({
         </label>
         <select
           id={`scenario-${policy}`}
-          value={selectedScenario}
-          onChange={(e) => setScenario(policy, e.target.value as ScenarioType)}
+          value={selectedScenario ?? ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            setScenario(policy, v === "" ? null : (v as ScenarioType));
+          }}
           className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 focus:outline-none"
         >
+          <option value="">Select a scenario…</option>
           {Object.values(ScenarioType).map((scenario) => (
             <option key={scenario} value={scenario}>
               {SCENARIO_LABELS[scenario]}

@@ -14,6 +14,68 @@ const baseConfig: PolicyConfig = {
   selectedScenario: ScenarioType.MINOR_ACCIDENT,
 };
 
+describe("AC3 — calc functions return 0 (never NaN/undefined) for invalid input", () => {
+  const cfg = (o: Partial<PolicyConfig> = {}): PolicyConfig => ({
+    vehicleValue: 20000,
+    coverageType: CoverageType.FULL_COVERAGE,
+    deductible: 1000,
+    selectedScenario: ScenarioType.MINOR_ACCIDENT,
+    ...o,
+  });
+  const bad = [NaN, Infinity, -Infinity, -500];
+
+  it.each(bad)("calculateOutOfPocket is 0 for vehicleValue %p", (v) => {
+    const out = calculateOutOfPocket(cfg({ vehicleValue: v }), ScenarioType.MINOR_ACCIDENT);
+    expect(out).toBe(0);
+    expect(Number.isNaN(out)).toBe(false);
+  });
+
+  it.each(bad)("estimatePremium is 0 for deductible %p", (d) => {
+    expect(estimatePremium(cfg({ deductible: d }))).toBe(0);
+  });
+
+  it.each(bad)("calculateCoveragePayout is 0 for vehicleValue %p", (v) => {
+    expect(calculateCoveragePayout(cfg({ vehicleValue: v }), ScenarioType.THEFT)).toBe(0);
+  });
+});
+
+describe("AC4 — deductible larger than vehicle value is handled gracefully", () => {
+  const cfg = (o: Partial<PolicyConfig> = {}): PolicyConfig => ({
+    vehicleValue: 5000,
+    coverageType: CoverageType.FULL_COVERAGE,
+    deductible: 8000,
+    selectedScenario: ScenarioType.MINOR_ACCIDENT,
+    ...o,
+  });
+
+  it("caps out-of-pocket at the vehicle value", () => {
+    expect(calculateOutOfPocket(cfg(), ScenarioType.MINOR_ACCIDENT)).toBe(5000);
+  });
+
+  it("floors the payout at 0 (never negative)", () => {
+    expect(calculateCoveragePayout(cfg(), ScenarioType.MINOR_ACCIDENT)).toBe(0);
+  });
+});
+
+describe("AC2 — a null scenario behaves like 'not covered'", () => {
+  const cfg = (o: Partial<PolicyConfig> = {}): PolicyConfig => ({
+    vehicleValue: 20000,
+    coverageType: CoverageType.FULL_COVERAGE,
+    deductible: 1000,
+    selectedScenario: null,
+    ...o,
+  });
+
+  it("isScenarioCovered is false for null", () => {
+    expect(isScenarioCovered(CoverageType.FULL_COVERAGE, null)).toBe(false);
+  });
+
+  it("out-of-pocket and payout are 0 for a null scenario", () => {
+    expect(calculateOutOfPocket(cfg(), null)).toBe(0);
+    expect(calculateCoveragePayout(cfg(), null)).toBe(0);
+  });
+});
+
 describe('calculateOutOfPocket', () => {
   describe('liability-only coverage (own-vehicle damage not covered)', () => {
     const config: PolicyConfig = { ...baseConfig, coverageType: CoverageType.LIABILITY_ONLY };

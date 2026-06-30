@@ -72,7 +72,7 @@ function ToggleButton({
     <button
       type="button"
       onClick={onClick}
-      aria-pressed={active}
+      aria-pressed={active ? "true" : "false"}
       className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 ${
         active
           ? "bg-teal-700 text-white"

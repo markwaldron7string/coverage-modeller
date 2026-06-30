@@ -26,7 +26,7 @@ export function encodeState(
     params.set(k.vehicleValue, String(policy.vehicleValue));
     params.set(k.coverageType, policy.coverageType);
     params.set(k.deductible, String(policy.deductible));
-    params.set(k.selectedScenario, policy.selectedScenario);
+    params.set(k.selectedScenario, policy.selectedScenario ?? "");
   };
   write("a", policyA);
   write("b", policyB);
@@ -50,11 +50,11 @@ function parseCoverage(
 
 function parseScenario(
   value: string | null,
-  fallback: ScenarioType,
-): ScenarioType {
-  return value !== null && SCENARIO_VALUES.includes(value)
-    ? (value as ScenarioType)
-    : fallback;
+  fallback: ScenarioType | null,
+): ScenarioType | null {
+  if (value === null) return fallback; // param absent -> default
+  if (value === "") return null;       // explicit "no scenario"
+  return SCENARIO_VALUES.includes(value) ? (value as ScenarioType) : fallback;
 }
 
 function decodePolicy(

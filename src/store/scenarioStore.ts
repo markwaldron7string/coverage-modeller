@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import { CoverageType, ScenarioType, PolicyConfig } from "@/types";
+import {
+  useScenarioStore,
+  DEFAULT_POLICY_A,
+  DEFAULT_POLICY_B,
+} from "@/store/scenarioStore";
 
 /** Identifies which of the two policy slices an action targets. */
 export type PolicyKey = "policyA" | "policyB";
@@ -10,7 +15,7 @@ interface ScenarioStore {
   setVehicleValue: (policy: PolicyKey, vehicleValue: number) => void;
   setCoverageType: (policy: PolicyKey, coverageType: CoverageType) => void;
   setDeductible: (policy: PolicyKey, deductible: number) => void;
-  setScenario: (policy: PolicyKey, selectedScenario: ScenarioType) => void;
+  setScenario: (policy: PolicyKey, selectedScenario: ScenarioType | null) => void;
   hydrate: (policyA: PolicyConfig, policyB: PolicyConfig) => void;
 }
 

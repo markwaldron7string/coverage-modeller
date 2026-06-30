@@ -2,10 +2,51 @@
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ControlsPanel } from "./ControlsPanel";
-import { useScenarioStore } from "@/store/scenarioStore";
+import { useScenarioStore, DEFAULT_POLICY_A, DEFAULT_POLICY_B } from "@/store/scenarioStore";
 import { CoverageType, ScenarioType } from "@/types";
 
 const initialState = useScenarioStore.getState();
+
+describe("AC1/AC5 — vehicle value validation", () => {
+  beforeEach(() => {
+    useScenarioStore.setState({ policyA: { ...DEFAULT_POLICY_A }, policyB: { ...DEFAULT_POLICY_B } });
+  });
+
+  it("shows a message below the minimum and links it via aria-describedby", () => {
+    useScenarioStore.setState({ policyA: { ...DEFAULT_POLICY_A, vehicleValue: 500 } });
+    render(<ControlsPanel policy="policyA" />);
+    const msg = screen.getByText(/at least \$1,000/i);
+    expect(msg).toBeInTheDocument();
+    const input = screen.getByLabelText(/vehicle value/i);
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAttribute("aria-describedby", msg.id);
+  });
+
+  it("shows a message above the maximum", () => {
+    useScenarioStore.setState({ policyA: { ...DEFAULT_POLICY_A, vehicleValue: 200000 } });
+    render(<ControlsPanel policy="policyA" />);
+    expect(screen.getByText(/at most \$150,000/i)).toBeInTheDocument();
+  });
+
+  it("shows no message and is valid for an in-range value", () => {
+    render(<ControlsPanel policy="policyA" />);
+    expect(screen.queryByText(/at least|at most/i)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/vehicle value/i)).not.toHaveAttribute("aria-invalid");
+  });
+});
+
+describe("AC2 — claim scenario can be cleared", () => {
+  beforeEach(() => {
+    useScenarioStore.setState({ policyA: { ...DEFAULT_POLICY_A }, policyB: { ...DEFAULT_POLICY_B } });
+  });
+
+  it("offers a placeholder option and sets null when chosen", () => {
+    render(<ControlsPanel policy="policyA" />);
+    expect(screen.getByRole("option", { name: /select a scenario/i })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/claim scenario/i), { target: { value: "" } });
+    expect(useScenarioStore.getState().policyA.selectedScenario).toBeNull();
+  });
+});
 
 describe("ControlsPanel", () => {
   beforeEach(() => {
@@ -63,9 +104,9 @@ describe("ControlsPanel", () => {
     expect(screen.getByText("$1,500")).toBeInTheDocument();
   });
 
-  it("renders the scenario dropdown with all five scenarios", () => {
+  it("renders the scenario dropdown with all scenarios", () => {
     const select = screen.getByLabelText(/scenario/i);
-    expect(within(select).getAllByRole("option")).toHaveLength(5);
+    expect(within(select).getAllByRole("option")).toHaveLength(6);
   });
 
   it("updates the store when a scenario is selected", () => {

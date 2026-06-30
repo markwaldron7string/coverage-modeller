@@ -19,7 +19,7 @@ export interface PolicyConfig {
   /** Deductible in whole dollars. */
   deductible: number;
   /** The scenario currently selected in the UI. */
-  selectedScenario: ScenarioType;
+  selectedScenario: ScenarioType | null;
 }
 
 export interface CalculationResult {
