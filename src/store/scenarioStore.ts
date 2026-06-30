@@ -1,10 +1,5 @@
 import { create } from "zustand";
 import { CoverageType, ScenarioType, PolicyConfig } from "@/types";
-import {
-  useScenarioStore,
-  DEFAULT_POLICY_A,
-  DEFAULT_POLICY_B,
-} from "@/store/scenarioStore";
 
 /** Identifies which of the two policy slices an action targets. */
 export type PolicyKey = "policyA" | "policyB";
