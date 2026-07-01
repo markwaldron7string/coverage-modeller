@@ -16,7 +16,7 @@ combinations — built around a problem I lived from the inside.
 
 **Live demo:** https://coverage-modeller.vercel.app/
 
-![Comparison view — two policies compared across five claim scenarios](docs/comparison-view.png)
+![Comparison view — two policies compared across five claim scenarios](docs/comparisonview.png)
 
 ## What it does
 
