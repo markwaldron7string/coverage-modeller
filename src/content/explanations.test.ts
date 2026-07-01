@@ -1,56 +1,58 @@
 import { buildExplanation } from "./explanations";
-import { CoverageType, ScenarioType, PolicyConfig } from "@/types";
+import { PolicyConfig, ScenarioType } from "@/types";
 
-const policy = (overrides: Partial<PolicyConfig> = {}): PolicyConfig => ({
+const cfg = (o: Partial<PolicyConfig> = {}): PolicyConfig => ({
   vehicleValue: 20000,
-  coverageType: CoverageType.FULL_COVERAGE,
+  comprehensive: false,
+  collision: false,
+  uninsuredMotorist: false,
   deductible: 1000,
   selectedScenario: ScenarioType.MINOR_ACCIDENT,
-  ...overrides,
+  ...o,
 });
 
-describe("buildExplanation", () => {
-  it("fills in the formatted vehicle value and deductible", () => {
-    const text = buildExplanation(
-      policy({ vehicleValue: 35000, deductible: 750 }),
-    );
-    expect(text).toContain("$35,000");
-    expect(text).toContain("$750");
+describe("buildExplanation content", () => {
+  it("always mentions liability", () => {
+    expect(buildExplanation(cfg())).toMatch(/liability/i);
   });
-
-  it("explains that liability only doesn't protect your own vehicle", () => {
-    const text = buildExplanation(
-      policy({ coverageType: CoverageType.LIABILITY_ONLY }),
-    ).toLowerCase();
-    expect(text).toContain("liability-only");
-    expect(text).toContain("out of pocket");
+  it("mentions comprehensive only when active", () => {
+    expect(buildExplanation(cfg({ comprehensive: true }))).toMatch(/added comprehensive coverage/i);
+    expect(buildExplanation(cfg({ comprehensive: false }))).not.toMatch(/added comprehensive coverage/i);
   });
-
-  it("explains that comprehensive excludes collisions", () => {
-    const text = buildExplanation(
-      policy({ coverageType: CoverageType.COMPREHENSIVE }),
-    ).toLowerCase();
-    expect(text).toContain("comprehensive");
-    expect(text).toContain("collision");
+  it("mentions collision only when active", () => {
+    expect(buildExplanation(cfg({ collision: true }))).toMatch(/collision coverage/i);
   });
-
-  it("explains that full coverage covers nearly everything", () => {
-    const text = buildExplanation(
-      policy({ coverageType: CoverageType.FULL_COVERAGE }),
-    ).toLowerCase();
-    expect(text).toContain("full coverage");
+  it("mentions uninsured motorist only when active", () => {
+    expect(buildExplanation(cfg({ uninsuredMotorist: true }))).toMatch(/uninsured\/underinsured motorist/i);
+    expect(buildExplanation(cfg({ uninsuredMotorist: false }))).not.toMatch(/uninsured\/underinsured motorist/i);
   });
+  it("notes own-vehicle damage isn't covered when neither comp nor collision is active", () => {
+    expect(buildExplanation(cfg())).toMatch(/wouldn't be covered/i);
+  });
+  it("always mentions the vehicle value, regardless of which coverages are active", () => {
+    expect(buildExplanation(cfg({ vehicleValue: 35000 }))).toMatch(/\$35,000/); // no comp/collision
+    expect(
+      buildExplanation(cfg({ vehicleValue: 35000, comprehensive: true, collision: true })),
+    ).toMatch(/\$35,000/); // WAS missing before this fix
+  });
+  it("fills in the deductible when a coverage that uses it is active", () => {
+    const text = buildExplanation(cfg({ deductible: 750, collision: true }));
+    expect(text).toMatch(/\$750/);
+  });
+});
 
-  it.each([
-    CoverageType.LIABILITY_ONLY,
-    CoverageType.COMPREHENSIVE,
-    CoverageType.FULL_COVERAGE,
-  ])("produces grammatically clean output for %s", (coverageType) => {
-    const text = buildExplanation(
-      policy({ coverageType, vehicleValue: 12345, deductible: 250 }),
-    );
+describe("grammatical sweep — every combination of the 3 toggles is clean prose", () => {
+  const bools = [true, false];
+  const combos: PolicyConfig[] = [];
+  for (const comprehensive of bools)
+    for (const collision of bools)
+      for (const uninsuredMotorist of bools)
+        combos.push(cfg({ comprehensive, collision, uninsuredMotorist }));
+
+  it.each(combos)("combo %#: no NaN/undefined, no double spaces, sentence-cased", (config) => {
+    const text = buildExplanation(config);
     expect(text).not.toMatch(/undefined|NaN/);
-    expect(text).not.toMatch(/\s{2,}/); // no double spaces
-    expect(text.trim()).toMatch(/^[A-Z].*\.$/s); // capital start, period end
+    expect(text).not.toMatch(/ {2,}/);
+    expect(text).toMatch(/^[A-Z].*\.$/s);
   });
 });

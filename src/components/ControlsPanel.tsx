@@ -1,10 +1,14 @@
 "use client";
 
 import { useScenarioStore, PolicyKey } from "@/store/scenarioStore";
-import { CoverageType, ScenarioType } from "@/types";
+import { ScenarioType } from "@/types";
 import {
-  COVERAGE_LABELS,
-  COVERAGE_DESCRIPTIONS,
+  COMPREHENSIVE_LABEL,
+  COMPREHENSIVE_DESCRIPTION,
+  COLLISION_LABEL,
+  COLLISION_DESCRIPTION,
+  UM_LABEL,
+  UM_DESCRIPTION,
   SCENARIO_LABELS,
 } from "@/lib/labels";
 import { formatCurrency } from "@/lib/format";
@@ -29,11 +33,13 @@ export function ControlsPanel({
 }: ControlsPanelProps) {
   // Selecting the whole slice is reference-stable (changes only when this
   // policy changes), so no useShallow is needed.
-  const { vehicleValue, coverageType, deductible, selectedScenario } =
+  const { vehicleValue, comprehensive, collision, uninsuredMotorist, deductible, selectedScenario } =
     useScenarioStore((s) => s[policy]);
 
   const setVehicleValue = useScenarioStore((s) => s.setVehicleValue);
-  const setCoverageType = useScenarioStore((s) => s.setCoverageType);
+  const setComprehensive = useScenarioStore((s) => s.setComprehensive);
+  const setCollision = useScenarioStore((s) => s.setCollision);
+  const setUninsuredMotorist = useScenarioStore((s) => s.setUninsuredMotorist);
   const setDeductible = useScenarioStore((s) => s.setDeductible);
   const setScenario = useScenarioStore((s) => s.setScenario);
 
@@ -78,7 +84,7 @@ export function ControlsPanel({
             const next = e.target.valueAsNumber;
             if (!Number.isNaN(next)) setVehicleValue(policy, next);
           }}
-          aria-invalid={vehicleError ? "true" : undefined}
+          aria-invalid={vehicleError !== null}
           aria-describedby={vehicleError ? vehicleErrorId : undefined}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 tabular-nums focus:border-teal-500 focus:ring-2 focus:ring-teal-500/40 focus:outline-none"
         />
@@ -89,50 +95,40 @@ export function ControlsPanel({
         )}
       </div>
 
-      {/* Coverage type */}
+      {/* Coverage — liability is the implicit baseline of every policy here;
+          comprehensive, collision, and UM are each independently selectable,
+          which is why this is a fieldset of checkboxes rather than radios:
+          the interaction model genuinely is "choose any of these," not
+          "choose exactly one." */}
       <fieldset className="m-0 border-0 p-0">
         <legend className="mb-2 text-sm font-medium text-slate-700">
-          Coverage type
+          Coverage
         </legend>
+        <p className="mb-2 text-sm text-slate-600">
+          Liability coverage is included on every policy modelled here.
+        </p>
         <div className="flex flex-col gap-2">
-          {Object.values(CoverageType).map((type) => {
-            const isSelected = coverageType === type;
-            return (
-              <div
-                key={type}
-                className={`flex gap-3 rounded-lg border p-3 transition-colors ${
-                  isSelected
-                    ? "border-teal-500 bg-teal-50"
-                    : "border-slate-200 hover:border-slate-300"
-                }`}
-              >
-                <input
-                  id={`coverage-${policy}-${type}`}
-                  type="radio"
-                  name={`coverage-type-${policy}`}
-                  value={type}
-                  checked={isSelected}
-                  onChange={() => setCoverageType(policy, type)}
-                  aria-describedby={`coverage-desc-${policy}-${type}`}
-                  className="mt-0.5 h-4 w-4 accent-teal-600"
-                />
-                <div className="flex flex-col">
-                  <label
-                    htmlFor={`coverage-${policy}-${type}`}
-                    className="font-medium text-slate-900"
-                  >
-                    {COVERAGE_LABELS[type]}
-                  </label>
-                  <span
-                    id={`coverage-desc-${policy}-${type}`}
-                    className="text-sm text-slate-600"
-                  >
-                    {COVERAGE_DESCRIPTIONS[type]}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+          <CoverageCheckbox
+            id={`comprehensive-${policy}`}
+            checked={comprehensive}
+            onChange={(v) => setComprehensive(policy, v)}
+            label={COMPREHENSIVE_LABEL}
+            description={COMPREHENSIVE_DESCRIPTION}
+          />
+          <CoverageCheckbox
+            id={`collision-${policy}`}
+            checked={collision}
+            onChange={(v) => setCollision(policy, v)}
+            label={COLLISION_LABEL}
+            description={COLLISION_DESCRIPTION}
+          />
+          <CoverageCheckbox
+            id={`um-${policy}`}
+            checked={uninsuredMotorist}
+            onChange={(v) => setUninsuredMotorist(policy, v)}
+            label={UM_LABEL}
+            description={UM_DESCRIPTION}
+          />
         </div>
       </fieldset>
 
@@ -196,5 +192,47 @@ export function ControlsPanel({
         </select>
       </div>
     </section>
+  );
+}
+
+function CoverageCheckbox({
+  id,
+  checked,
+  onChange,
+  label,
+  description,
+}: {
+  id: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+  label: string;
+  description: string;
+}) {
+  const descId = `${id}-desc`;
+  return (
+    <div
+      className={`flex gap-3 rounded-lg border p-3 transition-colors ${
+        checked
+          ? "border-teal-500 bg-teal-50"
+          : "border-slate-200 hover:border-slate-300"
+      }`}
+    >
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        aria-describedby={descId}
+        className="mt-0.5 h-4 w-4 accent-teal-600"
+      />
+      <div className="flex flex-col">
+        <label htmlFor={id} className="font-medium text-slate-900">
+          {label}
+        </label>
+        <span id={descId} className="text-sm text-slate-600">
+          {description}
+        </span>
+      </div>
+    </div>
   );
 }

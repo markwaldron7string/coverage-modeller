@@ -1,32 +1,30 @@
-import { CoverageType, ScenarioType, PolicyConfig } from "@/types";
+import { ScenarioType, PolicyConfig } from "@/types";
 import { DEFAULT_POLICY_A, DEFAULT_POLICY_B } from "@/store/scenarioStore";
 
-const COVERAGE_VALUES = Object.values(CoverageType) as string[];
 const SCENARIO_VALUES = Object.values(ScenarioType) as string[];
 
 type Prefix = "a" | "b";
-
 function keysFor(prefix: Prefix) {
   return {
     vehicleValue: `${prefix}v`,
-    coverageType: `${prefix}c`,
+    comprehensive: `${prefix}comp`,
+    collision: `${prefix}coll`,
+    uninsuredMotorist: `${prefix}um`,
     deductible: `${prefix}d`,
     selectedScenario: `${prefix}s`,
   };
 }
 
-/** Encodes both policies into a query string (no leading "?"). */
-export function encodeState(
-  policyA: PolicyConfig,
-  policyB: PolicyConfig,
-): string {
+export function encodeState(policyA: PolicyConfig, policyB: PolicyConfig): string {
   const params = new URLSearchParams();
-  const write = (prefix: Prefix, policy: PolicyConfig) => {
+  const write = (prefix: Prefix, p: PolicyConfig) => {
     const k = keysFor(prefix);
-    params.set(k.vehicleValue, String(policy.vehicleValue));
-    params.set(k.coverageType, policy.coverageType);
-    params.set(k.deductible, String(policy.deductible));
-    params.set(k.selectedScenario, policy.selectedScenario ?? "");
+    params.set(k.vehicleValue, String(p.vehicleValue));
+    params.set(k.comprehensive, p.comprehensive ? "1" : "0");
+    params.set(k.collision, p.collision ? "1" : "0");
+    params.set(k.uninsuredMotorist, p.uninsuredMotorist ? "1" : "0");
+    params.set(k.deductible, String(p.deductible));
+    params.set(k.selectedScenario, p.selectedScenario ?? "");
   };
   write("a", policyA);
   write("b", policyB);
@@ -38,16 +36,11 @@ function parseNumber(value: string | null, fallback: number): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 }
-
-function parseCoverage(
-  value: string | null,
-  fallback: CoverageType,
-): CoverageType {
-  return value !== null && COVERAGE_VALUES.includes(value)
-    ? (value as CoverageType)
-    : fallback;
+function parseBoolean(value: string | null, fallback: boolean): boolean {
+  if (value === "1") return true;
+  if (value === "0") return false;
+  return fallback;
 }
-
 function parseScenario(
   value: string | null,
   fallback: ScenarioType | null,
@@ -57,31 +50,19 @@ function parseScenario(
   return SCENARIO_VALUES.includes(value) ? (value as ScenarioType) : fallback;
 }
 
-function decodePolicy(
-  params: URLSearchParams,
-  prefix: Prefix,
-  fallback: PolicyConfig,
-): PolicyConfig {
+function decodePolicy(params: URLSearchParams, prefix: Prefix, fallback: PolicyConfig): PolicyConfig {
   const k = keysFor(prefix);
   return {
     vehicleValue: parseNumber(params.get(k.vehicleValue), fallback.vehicleValue),
-    coverageType: parseCoverage(params.get(k.coverageType), fallback.coverageType),
+    comprehensive: parseBoolean(params.get(k.comprehensive), fallback.comprehensive),
+    collision: parseBoolean(params.get(k.collision), fallback.collision),
+    uninsuredMotorist: parseBoolean(params.get(k.uninsuredMotorist), fallback.uninsuredMotorist),
     deductible: parseNumber(params.get(k.deductible), fallback.deductible),
-    selectedScenario: parseScenario(
-      params.get(k.selectedScenario),
-      fallback.selectedScenario,
-    ),
+    selectedScenario: parseScenario(params.get(k.selectedScenario), fallback.selectedScenario),
   };
 }
 
-/**
- * Decodes both policies from URL params. Every field falls back to its default
- * independently, so missing or invalid params degrade gracefully.
- */
-export function decodeState(params: URLSearchParams): {
-  policyA: PolicyConfig;
-  policyB: PolicyConfig;
-} {
+export function decodeState(params: URLSearchParams): { policyA: PolicyConfig; policyB: PolicyConfig } {
   return {
     policyA: decodePolicy(params, "a", DEFAULT_POLICY_A),
     policyB: decodePolicy(params, "b", DEFAULT_POLICY_B),

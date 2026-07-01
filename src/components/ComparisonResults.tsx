@@ -60,14 +60,8 @@ export function ComparisonResults() {
   const policyA = useScenarioStore((s) => s.policyA);
   const policyB = useScenarioStore((s) => s.policyB);
 
-  const coveredA = isScenarioCovered(
-    policyA.coverageType,
-    policyA.selectedScenario,
-  );
-  const coveredB = isScenarioCovered(
-    policyB.coverageType,
-    policyB.selectedScenario,
-  );
+  const coveredA = isScenarioCovered(policyA, policyA.selectedScenario);
+  const coveredB = isScenarioCovered(policyB, policyB.selectedScenario);
 
   const oopA = costCell(
     policyA,

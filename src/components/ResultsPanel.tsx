@@ -8,8 +8,9 @@ import {
   estimatePremium,
   calculateBreakEven,
   isScenarioCovered,
+  coveragesNeededFor,
 } from "@/lib/calculations";
-import { COVERAGE_LABELS, SCENARIO_LABELS } from "@/lib/labels";
+import { COVERAGE_KEY_LABELS, SCENARIO_LABELS } from "@/lib/labels";
 import { formatCurrency, formatBreakEven } from "@/lib/format";
 
 interface ResultsPanelProps {
@@ -27,7 +28,7 @@ export function ResultsPanel({ policy, comparisonConfig }: ResultsPanelProps) {
   const config = useScenarioStore((s) => s[policy]);
 
   const scenario = config.selectedScenario;
-  const covered = isScenarioCovered(config.coverageType, scenario);
+  const covered = isScenarioCovered(config, scenario);
   const outOfPocket = calculateOutOfPocket(config, scenario);
   const payout = calculateCoveragePayout(config, scenario);
   const premium = estimatePremium(config);
@@ -74,9 +75,11 @@ export function ResultsPanel({ policy, comparisonConfig }: ResultsPanelProps) {
           >
             <p className="font-medium text-amber-900">Not covered</p>
             <p className="mt-1 text-sm text-amber-800">
-              {COVERAGE_LABELS[config.coverageType]} doesn&rsquo;t cover{" "}
-              {SCENARIO_LABELS[scenario].toLowerCase()}. You&rsquo;d pay the full
-              cost yourself.
+              {SCENARIO_LABELS[scenario]} isn&rsquo;t covered without{" "}
+              {coveragesNeededFor(scenario)
+                .map((key) => COVERAGE_KEY_LABELS[key])
+                .join(" or ")}{" "}
+              coverage. You&rsquo;d pay the full cost yourself.
             </p>
           </div>
         )}
@@ -108,7 +111,7 @@ function Metric({
   emphasis?: boolean;
 }) {
   return (
-    <>
+    <div className="flex items-baseline justify-between gap-4">
       <dt className="text-sm text-slate-600">{label}</dt>
       <dd
         className={
@@ -119,6 +122,6 @@ function Metric({
       >
         {value}
       </dd>
-    </>
+    </div>
   );
 }

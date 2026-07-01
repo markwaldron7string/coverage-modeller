@@ -2,45 +2,34 @@
 import { render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ExplanationPanel } from "./ExplanationPanel";
-import { useScenarioStore } from "@/store/scenarioStore";
-import { CoverageType } from "@/types";
+import { useScenarioStore, DEFAULT_POLICY_A, DEFAULT_POLICY_B } from "@/store/scenarioStore";
 
-const initialState = useScenarioStore.getState();
+beforeEach(() => {
+  useScenarioStore.setState({
+    policyA: { ...DEFAULT_POLICY_A },
+    policyB: { ...DEFAULT_POLICY_B },
+  });
+});
 
 describe("ExplanationPanel", () => {
-  beforeEach(() => {
-    useScenarioStore.setState(initialState, true);
-  });
-
   it("renders an explanation reflecting the default policy", () => {
     render(<ExplanationPanel policy="policyA" />);
-    expect(screen.getByText(/full coverage/i)).toBeInTheDocument();
     expect(screen.getByText(/\$20,000/)).toBeInTheDocument();
     expect(screen.getByText(/\$1,000/)).toBeInTheDocument();
+    expect(screen.getByText(/liability coverage/i)).toBeInTheDocument();
   });
 
-  it("updates when the coverage type changes", () => {
+  it("updates when a coverage toggle changes", () => {
     render(<ExplanationPanel policy="policyA" />);
     act(() => {
-      useScenarioStore
-        .getState()
-        .setCoverageType("policyA", CoverageType.LIABILITY_ONLY);
+      useScenarioStore.getState().setComprehensive("policyA", false);
+      useScenarioStore.getState().setCollision("policyA", false);
     });
-    expect(screen.getByText(/liability-only/i)).toBeInTheDocument();
+    expect(screen.getByText(/wouldn't be covered/i)).toBeInTheDocument();
   });
 
-  it("updates when the deductible changes", () => {
+  it("does not mention 'Full Coverage' anywhere", () => {
     render(<ExplanationPanel policy="policyA" />);
-    act(() => {
-      useScenarioStore.getState().setDeductible("policyA", 500);
-    });
-    expect(screen.getByText(/\$500/)).toBeInTheDocument();
-  });
-
-  it("is a labelled region, distinct from the results panel", () => {
-    render(<ExplanationPanel policy="policyA" />);
-    expect(
-      screen.getByRole("region", { name: /in plain english/i }),
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/full coverage/i)).not.toBeInTheDocument();
   });
 });

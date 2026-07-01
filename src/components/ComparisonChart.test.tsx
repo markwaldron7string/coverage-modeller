@@ -4,9 +4,8 @@ import { render, screen, act, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ComparisonChart, buildComparisonChartData } from "./ComparisonChart";
 import { useScenarioStore } from "@/store/scenarioStore";
-import { CoverageType, ScenarioType, PolicyConfig } from "@/types";
+import { ScenarioType, PolicyConfig } from "@/types";
 
-// Give ResponsiveContainer real dimensions so the SVG (legend, axes) renders.
 jest.mock("recharts", () => {
   const Original = jest.requireActual("recharts");
   return {
@@ -23,7 +22,9 @@ const initialState = useScenarioStore.getState();
 
 const policy = (overrides: Partial<PolicyConfig> = {}): PolicyConfig => ({
   vehicleValue: 20000,
-  coverageType: CoverageType.FULL_COVERAGE,
+  comprehensive: true,
+  collision: true,
+  uninsuredMotorist: true,
   deductible: 500,
   selectedScenario: ScenarioType.MINOR_ACCIDENT,
   ...overrides,
@@ -45,11 +46,11 @@ describe("buildComparisonChartData", () => {
   });
 
   it("reflects coverage gaps as $0 for uncovered scenarios", () => {
-    const a = policy({ coverageType: CoverageType.LIABILITY_ONLY });
+    const a = policy({ comprehensive: false, collision: false, uninsuredMotorist: false });
     const b = policy();
     const rows = buildComparisonChartData(a, b);
     const minorAccident = rows.find((r) => r.scenario === "Minor accident")!;
-    expect(minorAccident["Policy A"]).toBe(0); // liability doesn't cover collision
+    expect(minorAccident["Policy A"]).toBe(0);
     expect(minorAccident["Policy B"]).toBe(500);
   });
 });
@@ -79,7 +80,6 @@ describe("ComparisonChart", () => {
     const table = screen.getByRole("table", {
       name: /out-of-pocket cost by scenario/i,
     });
-    // 5 scenario rows + 1 header row
     expect(within(table).getAllByRole("row")).toHaveLength(6);
   });
 
@@ -88,7 +88,7 @@ describe("ComparisonChart", () => {
     const table = screen.getByRole("table", {
       name: /out-of-pocket cost by scenario/i,
     });
-    // Policy A default deductible is $1,000; full coverage covers all 5 scenarios.
+    // Policy A defaults have every coverage on, so all 5 scenarios are covered.
     expect(within(table).getAllByText("$1,000")).toHaveLength(5);
     act(() => {
       useScenarioStore.getState().setDeductible("policyA", 750);
