@@ -16,13 +16,13 @@ combinations — built around a problem I lived from the inside.
 
 **Live demo:** https://coverage-modeller.vercel.app/
 
-![Comparison view — two policies compared across five claim scenarios](docs/comparisonview.png)
+![Comparison view — two policies compared across five claim scenarios](docs/comparison-view.png)
 
 ## What it does
 
-- **Single-policy modeller** — set vehicle value, coverage type, deductible, and a
-  claim scenario, and watch the estimated out-of-pocket cost, coverage payout,
-  and annual premium update in real time.
+- **Single-policy modeller** — set vehicle value, coverage selections,
+  deductible, and a claim scenario, and watch the estimated out-of-pocket cost,
+  coverage payout, and annual premium update in real time.
 - **Side-by-side comparison** — configure two policies and compare their
   out-of-pocket cost across all five claim scenarios, visualised as a grouped bar
   chart.
@@ -36,9 +36,10 @@ combinations — built around a problem I lived from the inside.
 
 - **Next.js (App Router)** — a server-rendered shell with client components for
   the interactive modeller; deploys to Vercel with zero configuration.
-- **TypeScript (strict)** — the coverage domain is modelled with exhaustive enums
-  and `Record<CoverageType, …>` maps, so adding a coverage tier won't compile
-  until it's been handled everywhere.
+- **TypeScript (strict)** — coverage-to-claim eligibility is modelled with an
+  exhaustive `Record<ScenarioType, …>` map tying each claim scenario to the
+  coverage(s) that satisfy it, so adding a new scenario won't compile until it's
+  been handled everywhere that matters.
 - **Zustand** — shares the two independent policy configurations across the
   modeller and comparison views as reference-stable slices, avoiding React
   Context re-render churn and prop-drilling.
@@ -54,6 +55,15 @@ combinations — built around a problem I lived from the inside.
 
 ## A few decisions worth calling out
 
+- **Coverage modelled as it actually composes, not as exclusive tiers.** No U.S.
+  state requires comprehensive or collision coverage — they're always
+  independent, optional add-ons on top of a liability baseline, and "Full
+  Coverage" isn't real policy terminology. The coverage model, calculations, and
+  UI were rebuilt around that: liability is implicit, and comprehensive,
+  collision, and uninsured/underinsured motorist are each independently
+  selectable. The tool is explicit about its own scope, too — a footer note
+  makes clear it illustrates coverage trade-offs rather than representing any
+  specific state's requirements or a real carrier's product.
 - **A pure calculation core.** Out-of-pocket cost, premium, payout, and
   break-even are pure functions with no UI dependencies, which made the business
   logic exhaustively testable and kept the components thin.
